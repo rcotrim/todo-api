@@ -62,7 +62,6 @@ app.post('/todos', function (req, res) {
     res.json(body);
 });
 
-
 //DELETE /todos/:id
 app.delete('/todos/:id', function (req, res) {
     var todoId = parseInt(req.params.id, 10);
@@ -82,6 +81,39 @@ app.delete('/todos/:id', function (req, res) {
     } else {
         res.status(404).json({"error": "nenhum todo achado com o id:" + todoId});
     }
+});
+
+// PUT /todos/:id - atualizar um registro
+app.put('/todos/:id', function (req, res) {
+    var todoId = parseInt(req.params.id, 10);
+    var matchedTodo = _.findWhere(todos, {id: todoId});
+    var body = _.pick(req.body, 'description', 'completed');
+    var validAttriburtes = {};
+
+    if (!matchedTodo) {
+        res.status(404).json({"error": "nenhum todo achado com o id:" + todoId});
+    }
+
+    //Validando dados passados
+    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed))  {
+        validAttriburtes.completed = body.completed;
+    } else if (body.hasOwnProperty('completed')) {
+        return res.status(400).send
+    } else {
+        // nunca mandou atributos
+    }
+
+    if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
+        validAttriburtes.description = body.description;
+    } else if (body.hasOwnProperty('description')) {
+        return res.status(400).send
+    } else {
+        // nunca mandou atributos
+    }
+    
+    _.extend(matchedTodo, validAttriburtes);
+    res.json(matchedTodo);
+    
 });
 
 app.listen(PORT, function() {
