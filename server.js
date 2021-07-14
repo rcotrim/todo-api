@@ -1,4 +1,5 @@
 var express = require('express');
+const { filter } = require('underscore');
 //var bodyParser = require('body-parser');
 var _ = require("underscore");
 
@@ -15,9 +16,18 @@ app.get('/', function (req, res) {
     res.send('TODO API root');
 });
 
-// GET /todos
+// GET /todos?completed=true
 app.get('/todos', function (req, res) {
-    res.json(todos);
+    var queryParam = req.query;
+    var filteredTodos = todos;
+    //if has property && completed === 'true'
+    if (queryParam.hasOwnProperty('completed') && queryParam.completed === 'true') {
+        filteredTodos = _.where(filteredTodos, {completed: true});
+    } else if (queryParam.hasOwnProperty('completed') && queryParam.completed === 'false') {
+        filteredTodos = _.where(filteredTodos, {completed: false});
+    }
+    
+    res.json(filteredTodos);
 });
 
 //GET /todos/:id
