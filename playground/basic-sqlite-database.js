@@ -21,37 +21,46 @@ var Todo = sequelize.define('todo' , {
 })
 
 sequelize.sync().then(function() {
+    //force: true
     console.log('Tudo sincronizado !');
 
-    Todo.create({
-        description: 'Ir ao super',
-        completed: false
-    }).then(function(todo) {
-        // console.log('finalizado');
-        // console.log(todo)
-        return Todo.create( {
-            description: 'Cinema'
-        });
-    }).then(function() {
-        //return Todo.findByPk(1)
-        return Todo.findAll({
-            where: {
-                //completed: false
-                description: {
-                    [Op.like]: '%cinema%'
-                }
-            }
-        });
-    }).then(function (todos){
-        if (todos) {
-            //console.log(todos.toJSON());
-            todos.forEach(todo => {
-                console.log(todo.toJSON());
-            });
+    Todo.findByPk(20).then(function(todo){
+        if(todo) {
+            console.log(todo.toJSON());
         } else {
-            console.log('No TODO found')
+            console.log('Não encontrado');
         }
-    }).catch( function(e) {
-        console.log(e);
     })
+
+    // Todo.create({
+    //     description: 'Ir ao super',
+    //     completed: false
+    // }).then(function(todo) {
+    //     // console.log('finalizado');
+    //     // console.log(todo)
+    //     return Todo.create( {
+    //         description: 'Cinema'
+    //     });
+    // }).then(function() {
+    //     //return Todo.findByPk(1)
+    //     return Todo.findAll({
+    //         where: {
+    //             //completed: false
+    //             description: {
+    //                 [Op.like]: '%cinema%'
+    //             }
+    //         }
+    //     });
+    // }).then(function (todos){
+    //     if (todos) {
+    //         //console.log(todos.toJSON());
+    //         todos.forEach(todo => {
+    //             console.log(todo.toJSON());
+    //         });
+    //     } else {
+    //         console.log('No TODO found')
+    //     }
+    // }).catch( function(e) {
+    //     console.log(e);
+    // })
 });
