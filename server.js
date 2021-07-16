@@ -19,22 +19,42 @@ app.get('/', function (req, res) {
 
 // GET /todos?completed=true&q=work
 app.get('/todos', function (req, res) {
-    var queryParam = req.query;
-    var filteredTodos = todos;
-    //if has property && completed === 'true'
-    if (queryParam.hasOwnProperty('completed') && queryParam.completed === 'true') {
-        filteredTodos = _.where(filteredTodos, {completed: true});
-    } else if (queryParam.hasOwnProperty('completed') && queryParam.completed === 'false') {
-        filteredTodos = _.where(filteredTodos, {completed: false});
+    //Implementando com sequelize para acesso ao banco
+    var query = req.query;
+    var where = {};
+    if (query.hasOwnProperty('completed') && query.completed === 'true') {
+        where.completed = true;
+    } else if (query.hasOwnProperty('completed') && query.completed === 'false') {
+        where.completed = true;
+    }
+    if (query.hasOwnProperty('q') && query.q.trim().length > 0) {
+        where.description = {
+            [db.Op.like]: '%'+ query.q + '%'
+        };
     }
 
-    if (queryParam.hasOwnProperty('q') && queryParam.q.trim().length > 0) {
-        filteredTodos = _.filter(filteredTodos, function (todo) {
-            return todo.description.toLowerCase().indexOf(queryParam.q.toLowerCase().trim()) > -1;
-        });
-    }
+    db.todo.findAll({where: where}).then( function (todos) {
+        res.json(todos);
+    }, function (e) {
+        res.status(500).send();
+    });
 
-    res.json(filteredTodos);
+    // var queryParam = req.query;
+    // var filteredTodos = todos;
+    // //if has property && completed === 'true'
+    // if (queryParam.hasOwnProperty('completed') && queryParam.completed === 'true') {
+    //     filteredTodos = _.where(filteredTodos, {completed: true});
+    // } else if (queryParam.hasOwnProperty('completed') && queryParam.completed === 'false') {
+    //     filteredTodos = _.where(filteredTodos, {completed: false});
+    // }
+
+    // if (queryParam.hasOwnProperty('q') && queryParam.q.trim().length > 0) {
+    //     filteredTodos = _.filter(filteredTodos, function (todo) {
+    //         return todo.description.toLowerCase().indexOf(queryParam.q.toLowerCase().trim()) > -1;
+    //     });
+    // }
+
+    // res.json(filteredTodos);
 });
 
 //GET /todos/:id

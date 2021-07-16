@@ -1,7 +1,8 @@
 var Sequelize = require('sequelize');
-const {
-    Op
-} = require('sequelize');
+// const {
+//     Op
+// } = require('sequelize');
+const Op = Sequelize.Op;
 var sequelize = new Sequelize(undefined, undefined, undefined, {
     'dialect': 'sqlite',
     'storage': __dirname + '/data/dev-todo-api.sqlite'
