@@ -22,6 +22,7 @@ var db = {};
 
 //db.todo = Op.import(__dirname + '/models/todo.js');
 db.todo = require('./models/todo.js')(sequelize);
+db.user = require('./models/user.js')(sequelize);
 db.sequilize - sequelize;
 db.Sequelize = Sequelize;
 db.Op = Op;
