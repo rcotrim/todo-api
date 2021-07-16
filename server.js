@@ -133,13 +133,30 @@ app.delete('/todos/:id', function (req, res) {
     // });
 
     // usign the underscore library
-    var matchedTodo = _.findWhere(todos, {id: todoId});
-    if (matchedTodo) {
-        todos = _.without(todos, matchedTodo)
-        res.json(matchedTodo);
-    } else {
-        res.status(404).json({"error": "nenhum todo achado com o id:" + todoId});
-    }
+    // var matchedTodo = _.findWhere(todos, {id: todoId});
+    // if (matchedTodo) {
+    //     todos = _.without(todos, matchedTodo)
+    //     res.json(matchedTodo);
+    // } else {
+    //     res.status(404).json({"error": "nenhum todo achado com o id:" + todoId});
+    // }
+
+    //Usando sequelize
+    db.todo.destroy({
+        where: {
+            id: todoId
+        }
+    }).then(function(rowsDeleted) {
+        if (rowsDeleted === 0) {
+            res.status(404).json({
+                "error": "nenhum todo achado com o id:" + todoId
+            });
+        } else {
+            res.status(204).send();     //tudo OK e não mando nenhum dado de volta !
+        }
+    }, function(e) {
+        res.status(500).send();
+    })
 });
 
 // PUT /todos/:id - atualizar um registro
