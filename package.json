@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "pg": "^4.5.7",
+    "pg-hstore": "^2.3.2",
     "sequelize": "^6.6.5",
     "sqlite3": "^5.0.2",
     "underscore": "^1.8.3"
