@@ -64,10 +64,9 @@ app.post('/todos', function (req, res) {
     // usando underscore "pick" para só pegar os dados de interesse
     var body = _.pick(req.body, 'description', 'completed');
 
-    // call create on db.todo
+    // call create on db.todo - Database
     // responde with 200 and todo
     // res.statusw(400).json(e)
-
     db.todo.create(body).then( function (todo) {
         res.json(todo.toJSON());
     }, function(e){
