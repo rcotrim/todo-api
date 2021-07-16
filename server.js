@@ -49,12 +49,25 @@ app.get('/todos/:id', function (req, res) {
     // });
 
     // usign the underscore library
-    var matchedTodo = _.findWhere(todos, {id:todoId});
-    if (matchedTodo) {
-        res.json(matchedTodo);
-    } else {
-        res.status(404).send();
-    }
+    // var matchedTodo = _.findWhere(todos, {id:todoId});
+    // if (matchedTodo) {
+    //     res.json(matchedTodo);
+    // } else {
+    //     res.status(404).send();
+    // }
+    // Usando sequelize
+
+    db.todo.findByPk(todoId).then(function (todo) {
+        if (!!todo) { // para converter um objeto em BOLLEAN 
+            res.json(todo.toJSON());
+        } else {
+            res.status(404).json({
+                "error": "nenhum todo achado com o id:" + todoId
+            });
+        }
+    }, function (e) {
+        res.status(500).send();
+    })
 });
 
 //POST /todos
