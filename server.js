@@ -25,7 +25,7 @@ app.get('/todos', function (req, res) {
     if (query.hasOwnProperty('completed') && query.completed === 'true') {
         where.completed = true;
     } else if (query.hasOwnProperty('completed') && query.completed === 'false') {
-        where.completed = true;
+        where.completed = false;
     }
     if (query.hasOwnProperty('q') && query.q.trim().length > 0) {
         where.description = {
