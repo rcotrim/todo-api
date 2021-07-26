@@ -6,7 +6,7 @@ const {
 } = require('sequelize');
 
 module.exports = function (sequelize) {
-    return sequelize.define('user', {
+    const user = sequelize.define('user', {
         email: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -43,12 +43,35 @@ module.exports = function (sequelize) {
                     user.email = user.email.toLowerCase()
                 }
             }
-        },
-        instanceMethods: {
-            toPublicJSON: function () {
-                var json = this.toJSON();
-                return _.pick(json, 'id', 'email', 'createdAt', 'updatedAt');
-            }
         }
     });
+
+    user.prototype.toPublicJSON = function () {
+        var json = this.toJSON();
+        return _.pick(json, 'id', 'email', 'createdAt', 'updatedAt');
+    }
+
+    user.authenticate = function (body) {
+        return new Promise(function (resolve, reject) {
+            if (typeof body.email !== 'string' || typeof body.password !== 'string') {
+                return reject();
+            }
+            user.findOne({
+                where: {
+                    email: body.email
+                }
+            }).then(function (user) {
+                if (!user || !bcrypt.compareSync(body.password, user.get('password_hash'))) {
+                    return reject();
+                }
+                resolve(user);
+            }, function (e) {
+                reject();
+            })
+
+        })
+    }
+
+
+    return user;
 }
