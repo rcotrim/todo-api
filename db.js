@@ -27,4 +27,7 @@ db.sequilize - sequelize;
 db.Sequelize = Sequelize;
 db.Op = Op;
 
+db.todo.belongsTo(db.user);
+db.user.hasMany(db.todo);
+
 module.exports = db;
