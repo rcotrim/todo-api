@@ -1,5 +1,6 @@
 var Sequelize = require('sequelize');
 const { Op } = require('sequelize');
+const todo = require('../models/todo');
 var sequelize = new Sequelize(undefined, undefined, undefined, {
     'dialect': 'sqlite',
     'storage': __dirname + '/basic-dqlite-database.sqlite'
@@ -18,49 +19,41 @@ var Todo = sequelize.define('todo' , {
         allowNull: false,
         defaultValue: false
     }
-})
+});
 
-sequelize.sync().then(function() {
-    //force: true
+var User = sequelize.define('user', {
+    email: Sequelize.STRING
+});
+
+Todo.belongsTo(User);
+User.hasMany(Todo);
+
+sequelize.sync({
+    // force: true
+}).then(function() {
     console.log('Tudo sincronizado !');
 
-    Todo.findByPk(20).then(function(todo){
-        if(todo) {
-            console.log(todo.toJSON());
-        } else {
-            console.log('Não encontrado');
-        }
-    })
-
-    // Todo.create({
-    //     description: 'Ir ao super',
-    //     completed: false
-    // }).then(function(todo) {
-    //     // console.log('finalizado');
-    //     // console.log(todo)
-    //     return Todo.create( {
-    //         description: 'Cinema'
+    // User.create({
+    //     email: 'luis@teste.com'
+    // }).then(function () {
+    //     return Todo.create({
+    //         description: 'Lavar Carro'
     //     });
-    // }).then(function() {
-    //     //return Todo.findByPk(1)
-    //     return Todo.findAll({
-    //         where: {
-    //             //completed: false
-    //             description: {
-    //                 [Op.like]: '%cinema%'
-    //             }
-    //         }
-    //     });
-    // }).then(function (todos){
-    //     if (todos) {
-    //         //console.log(todos.toJSON());
-    //         todos.forEach(todo => {
-    //             console.log(todo.toJSON());
-    //         });
-    //     } else {
-    //         console.log('No TODO found')
-    //     }
-    // }).catch( function(e) {
-    //     console.log(e);
+    // }).then(function (todo) {
+    //     User.findByPk(1).then(function(user) {
+    //         user.addTodo(todo);
+    //     })
     // })
+
+    User.findByPk(1).then(function (user){
+        user.getTodos({
+            where: {
+                completed: false
+            }
+        }).then(function (todos) {
+            todos.forEach(function (todo) {
+                console.log(todo.toJSON());
+            });
+        })
+    })
 });
