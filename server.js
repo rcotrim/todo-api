@@ -257,17 +257,27 @@ app.post('/users', function (req, res) {
 //POST /users/login
 app.post('/users/login', function (req, res) {
     var body = _.pick(req.body, 'email', 'password');
-    
+    var userInstance;
+
     db.user.authenticate(body).then(function (user) {
         var token = user.generateToken('authentication')
-        if (token) {
-            res.header('Auth', token).json(user.toPublicJSON())
-        } else {
-            rest.status(402).send();
-        }
-    }, function() {
+        userInstance = user;
+
+        return db.token.create({
+            token: token
+        });
+        // Fica obsoleto uma vez que a validação fica no Create da tabela do token !
+        // mas precisamos achar uma forma de retornar o token !
+        // if (token) {
+        //     res.header('Auth', token).json(user.toPublicJSON())
+        // } else {
+        //     rest.status(402).send();
+        // }
+    }).then(function (tokenInstance) {
+        res.header('Auth', tokenInstance.get('token')).json(userInstance.toPublicJSON());
+    }).catch(function() {
         res.status(401).send();
-    })
+    });
 
     // if (typeof body.email !== 'string' || typeof body.password !== 'string') {
     //     return res.status(400).send();
@@ -286,6 +296,14 @@ app.post('/users/login', function (req, res) {
     // })
 });
 
+//DELETE /user/login
+app.delete('/users/login', middleware.requireAuthentication, function (req, res) {
+    req.token.destroy().then(function () {
+        res.status(204).send();
+    }).catch (function () {
+        res.status(500).send();
+    });
+});
 
 db.todo.sequelize.sync(
     {force: true}
